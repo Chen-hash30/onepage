@@ -1,5 +1,7 @@
 # OnePage - Web Page Sharing Platform
 
+![OnePage Logo](picture/logo.png)
+
 [English](README.zh-CN.md) | [中文](README.md)
 
 ---

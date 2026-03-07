@@ -1,5 +1,7 @@
 # OnePage - 网页分享平台
 
+![OnePage Logo](picture/logo.png)
+
 [English](README.zh-CN.md) | [中文](README.md)
 
 ---
