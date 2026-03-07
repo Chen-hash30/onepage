@@ -12,45 +12,10 @@ class User {
     }
 
     public function create($data) {
-        $debug = [];
-        $debug[] = "=== User::create 调试信息 ===";
-        $debug[] = "时间: " . date('Y-m-d H:i:s');
-        $debug[] = "接收到的数据: " . json_encode($data);
-        
-        try {
-            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-            // 确保 accepted_terms 是整数 0 或 1
-            $data['accepted_terms'] = isset($data['accepted_terms']) ? 1 : 0;
-            
-            $debug[] = "处理后的数据: " . json_encode([
-                'username' => $data['username'],
-                'email' => $data['email'],
-                'accepted_terms' => $data['accepted_terms']
-            ]);
-            
-            $sql = "INSERT INTO users (username, email, password, accepted_terms) VALUES (?, ?, ?, ?)";
-            $debug[] = "SQL: $sql";
-            
-            $stmt = $this->db->prepare($sql);
-            $debug[] = "准备 SQL 成功";
-            
-            $result = $stmt->execute([$data['username'], $data['email'], $data['password'], $data['accepted_terms']]);
-            $debug[] = "执行结果: " . ($result ? '成功' : '失败');
-            $debug[] = "影响行数: " . $stmt->rowCount();
-            
-            if (!$result) {
-                $errorInfo = $stmt->errorInfo();
-                $debug[] = "SQL 错误信息: " . json_encode($errorInfo);
-            }
-            
-            echo "<script>console.log(" . json_encode(implode("\n", $debug)) . ");</script>";
-            return $result;
-        } catch (\Exception $e) {
-            $debug[] = "异常: " . $e->getMessage();
-            $debug[] = "堆栈: " . $e->getTraceAsString();
-            echo "<script>console.error(" . json_encode(implode("\n", $debug)) . ");</script>";
-            return false;
-        }
+        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        $data['accepted_terms'] = isset($data['accepted_terms']) ? (int)$data['accepted_terms'] : 0;
+        $stmt = $this->db->prepare("INSERT INTO users (username, email, password, accepted_terms) VALUES (?, ?, ?, ?)");
+        return $stmt->execute([$data['username'], $data['email'], $data['password'], $data['accepted_terms']]);
     }
 
     public function findByEmail($email) {
@@ -75,6 +40,9 @@ class User {
         $fields = [];
         $values = [];
         foreach ($data as $key => $value) {
+            if ($key === 'accepted_terms') {
+                $value = (int)$value;
+            }
             $fields[] = "$key = ?";
             $values[] = $value;
         }

@@ -90,101 +90,46 @@ class AuthController extends Controller {
     }
 
     public function register() {
-        // 开启错误显示
-        ini_set('display_errors', 1);
-        ini_set('display_startup_errors', 1);
-        error_reporting(E_ALL);
-        
-        // 记录调试信息
-        $debug = [];
-        $debug[] = "=== 注册调试信息 ===";
-        $debug[] = "时间: " . date('Y-m-d H:i:s');
-        $debug[] = "POST 数据: " . json_encode($_POST);
-        $debug[] = "SESSION 数据: " . json_encode($_SESSION);
-        
         $username = $_POST['username'] ?? '';
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
         $verificationCode = $_POST['verification_code'] ?? '';
 
-        $debug[] = "用户名: $username";
-        $debug[] = "邮箱: $email";
-        $debug[] = "验证码: $verificationCode";
-
         // Validation
         if (empty($username) || empty($email) || empty($password) || empty($verificationCode)) {
-            $debug[] = "错误: 所有字段都是必需的";
-            echo "<script>console.log(" . json_encode(implode("\n", $debug)) . ");</script>";
             return $this->view('auth/register', ['error' => '所有字段都是必需的']);
         }
 
         if (strpos($email, '@gmail.com') !== false) {
-            $debug[] = "错误: Gmail邮箱无法注册";
-            echo "<script>console.log(" . json_encode(implode("\n", $debug)) . ");</script>";
             return $this->view('auth/register', ['error' => 'Gmail邮箱无法注册，请使用其他邮箱']);
         }
 
         if (!preg_match('/^[a-zA-Z0-9_]{4,20}$/', $username)) {
-            $debug[] = "错误: 用户名格式无效";
-            echo "<script>console.log(" . json_encode(implode("\n", $debug)) . ");</script>";
             return $this->view('auth/register', ['error' => '用户名必须是4-20位字母、数字或下划线']);
         }
 
         if (strlen($password) < 8 || !preg_match('/[a-zA-Z]/', $password) || !preg_match('/[0-9]/', $password)) {
-            $debug[] = "错误: 密码格式无效";
-            echo "<script>console.log(" . json_encode(implode("\n", $debug)) . ");</script>";
             return $this->view('auth/register', ['error' => '密码至少8位，必须包含字母和数字']);
         }
 
-        try {
-            $debug[] = "检查邮箱是否已注册...";
-            if ($this->userModel->findByEmail($email)) {
-                $debug[] = "错误: 该邮箱已被注册";
-                echo "<script>console.log(" . json_encode(implode("\n", $debug)) . ");</script>";
-                return $this->view('auth/register', ['error' => '该邮箱已被注册']);
-            }
-
-            $debug[] = "检查验证码...";
-            $debug[] = "SESSION 验证码: " . ($_SESSION['verification_code'] ?? '未设置');
-            $debug[] = "SESSION 邮箱: " . ($_SESSION['verification_email'] ?? '未设置');
-            
-            if ($verificationCode != ($_SESSION['verification_code'] ?? '')) {
-                $debug[] = "错误: 验证码不匹配";
-                echo "<script>console.log(" . json_encode(implode("\n", $debug)) . ");</script>";
-                return $this->view('auth/register', ['error' => '验证码错误']);
-            }
-
-            if ($email != ($_SESSION['verification_email'] ?? '')) {
-                $debug[] = "错误: 邮箱不匹配";
-                echo "<script>console.log(" . json_encode(implode("\n", $debug)) . ");</script>";
-                return $this->view('auth/register', ['error' => '邮箱不匹配']);
-            }
-
-            $debug[] = "开始创建用户...";
-            $result = $this->userModel->create([
-                'username' => $username, 
-                'email' => $email, 
-                'password' => $password,
-                'accepted_terms' => 0  // 新用户默认未接受条款
-            ]);
-            $debug[] = "创建用户结果: " . ($result ? '成功' : '失败');
-            
-            if ($result) {
-                unset($_SESSION['verification_code'], $_SESSION['verification_email']);
-                $debug[] = "注册成功，准备跳转";
-                echo "<script>console.log(" . json_encode(implode("\n", $debug)) . ");</script>";
-                return $this->redirect('/accept-terms');
-            }
-
-            $debug[] = "错误: 注册失败";
-            echo "<script>console.log(" . json_encode(implode("\n", $debug)) . ");</script>";
-            return $this->view('auth/register', ['error' => '注册失败']);
-        } catch (\Exception $e) {
-            $debug[] = "异常: " . $e->getMessage();
-            $debug[] = "堆栈: " . $e->getTraceAsString();
-            echo "<script>console.error(" . json_encode(implode("\n", $debug)) . ");</script>";
-            return $this->view('auth/register', ['error' => '注册失败: ' . $e->getMessage()]);
+        if ($this->userModel->findByEmail($email)) {
+            return $this->view('auth/register', ['error' => '该邮箱已被注册']);
         }
+
+        if ($verificationCode != ($_SESSION['verification_code'] ?? '')) {
+            return $this->view('auth/register', ['error' => '验证码错误']);
+        }
+
+        if ($email != ($_SESSION['verification_email'] ?? '')) {
+            return $this->view('auth/register', ['error' => '邮箱不匹配']);
+        }
+
+        if ($this->userModel->create(['username' => $username, 'email' => $email, 'password' => $password])) {
+            unset($_SESSION['verification_code'], $_SESSION['verification_email']);
+            return $this->redirect('/accept-terms');
+        }
+
+        return $this->view('auth/register', ['error' => '注册失败']);
     }
 
     public function logout() {
