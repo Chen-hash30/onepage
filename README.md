@@ -1,0 +1,192 @@
+# OnePage - Web Page Sharing Platform
+
+[English](#english) | [中文](#中文)
+
+---
+
+<a name="english"></a>
+## English
+
+### 📖 Overview
+
+OnePage is a modern web page sharing platform that allows users to upload and share static HTML pages with custom domains, AI-powered content moderation, and real-time analytics.
+
+### ✨ Features
+
+- 🚀 **Easy Upload** - Upload HTML pages via web interface or MCP API
+- 🎨 **Custom Domains** - Support for custom domain binding
+- 🤖 **AI Moderation** - Automatic content review using AI
+- 📊 **Analytics** - Real-time page view statistics
+- 🔐 **User Management** - Complete user authentication system
+- 🎯 **Admin Panel** - Powerful admin dashboard
+- 📱 **Responsive Design** - Modern, mobile-friendly UI
+
+### 🛠️ Tech Stack
+
+- **Backend**: PHP 8.2+
+- **Database**: MySQL 5.7+ / MariaDB 10.3+
+- **Frontend**: Tailwind CSS
+- **Web Server**: Nginx / Apache
+- **AI Integration**: NVIDIA NIM API
+
+### 📋 Requirements
+
+- PHP >= 8.2
+- MySQL >= 5.7 or MariaDB >= 10.3
+- Nginx or Apache web server
+- Composer (for dependencies)
+- SSL certificate (recommended)
+
+### 🚀 Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Chen-hash30/onepage.git
+   cd onepage
+   ```
+
+2. **Set permissions**
+   ```bash
+   chmod 777 .
+   chmod -R 777 uploads/pages
+   chmod -R 777 logs
+   ```
+
+3. **Configure web server**
+   - Point your domain's document root to the `public` directory
+   - Configure URL rewriting (see [Installation Guide](INSTALL.md))
+
+4. **Run the installer**
+   - Visit your website in a browser
+   - Follow the installation wizard
+
+5. **Login and start using**
+   - Default admin credentials are set during installation
+
+### 📚 Documentation
+
+- [Installation Guide](INSTALL.md)
+- [Configuration](docs/CONFIGURATION.md)
+- [API Documentation](docs/API.md)
+- [Troubleshooting](TROUBLESHOOTING.md)
+
+### 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+### 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### 🙏 Acknowledgments
+
+- Tailwind CSS for the amazing CSS framework
+- NVIDIA NIM for AI content moderation
+- All contributors and users
+
+---
+
+<a name="中文"></a>
+## 中文
+
+### 📖 项目简介
+
+OnePage 是一个现代化的网页分享平台，允许用户上传和分享静态 HTML 页面，支持自定义域名、AI 内容审核和实时数据分析。
+
+### ✨ 主要特性
+
+- 🚀 **轻松上传** - 通过网页界面或 MCP API 上传 HTML 页面
+- 🎨 **自定义域名** - 支持自定义域名绑定
+- 🤖 **AI 审核** - 使用 AI 自动进行内容审核
+- 📊 **数据分析** - 实时页面访问统计
+- 🔐 **用户管理** - 完整的用户认证系统
+- 🎯 **管理后台** - 强大的管理面板
+- 📱 **响应式设计** - 现代化、移动端友好的界面
+
+### 🛠️ 技术栈
+
+- **后端**: PHP 8.2+
+- **数据库**: MySQL 5.7+ / MariaDB 10.3+
+- **前端**: Tailwind CSS
+- **Web 服务器**: Nginx / Apache
+- **AI 集成**: NVIDIA NIM API
+
+### 📋 系统要求
+
+- PHP >= 8.2
+- MySQL >= 5.7 或 MariaDB >= 10.3
+- Nginx 或 Apache Web 服务器
+- Composer（用于依赖管理）
+- SSL 证书（推荐）
+
+### 🚀 快速开始
+
+1. **克隆仓库**
+   ```bash
+   git clone https://github.com/yourusername/onepage.git
+   cd onepage
+   ```
+
+2. **设置权限**
+   ```bash
+   chmod 777 .
+   chmod -R 777 uploads/pages
+   chmod -R 777 logs
+   ```
+
+3. **配置 Web 服务器**
+   - 将域名的文档根目录指向 `public` 目录
+   - 配置 URL 重写（参见[安装指南](INSTALL.md)）
+
+4. **运行安装程序**
+   - 在浏览器中访问你的网站
+   - 按照安装向导进行操作
+
+5. **登录并开始使用**
+   - 管理员凭据在安装过程中设置
+
+### 📚 文档
+
+- [安装指南](INSTALL.md)
+- [配置说明](docs/CONFIGURATION.md)
+- [API 文档](docs/API.md)
+- [故障排查](TROUBLESHOOTING.md)
+
+### 🤝 参与贡献
+
+欢迎贡献代码！请随时提交 Pull Request。
+
+### 📄 许可证
+
+本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
+
+### 🙏 致谢
+
+- Tailwind CSS 提供优秀的 CSS 框架
+- NVIDIA NIM 提供 AI 内容审核服务
+- 所有贡献者和用户
+
+---
+
+## 📸 Screenshots / 截图
+
+### Homepage / 首页
+![Homepage](docs/screenshots/homepage.png)
+
+### Dashboard / 用户面板
+![Dashboard](docs/screenshots/dashboard.png)
+
+### Admin Panel / 管理后台
+![Admin Panel](docs/screenshots/admin.png)
+
+---
+
+## 🔗 Links / 链接
+
+- [Demo / 演示站点](https://share.kkcws.my) - 公益站，没有部署条件的用户可以注册使用
+- [Documentation / 文档](docs/)
+- [Issue Tracker / 问题追踪](https://github.com/Chen-hash30/onepage/issues)
+
+---
+
+Made with ❤️ by [Chen-hash30](https://github.com/Chen-hash30)
