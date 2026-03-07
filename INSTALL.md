@@ -1,5 +1,9 @@
 # Installation Guide
 
+[English](INSTALL.md) | [中文](INSTALL.zh-CN.md)
+
+---
+
 ## Table of Contents
 
 - [Requirements](#requirements)

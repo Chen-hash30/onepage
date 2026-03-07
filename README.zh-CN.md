@@ -1,5 +1,9 @@
 # OnePage - 网页分享平台
 
+[English](README.md) | [中文](README.zh-CN.md)
+
+---
+
 ## 📖 项目简介
 
 OnePage 是一个现代化的网页分享平台，允许用户上传和分享静态 HTML 页面，支持自定义域名、AI 内容审核和实时数据分析。

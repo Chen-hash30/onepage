@@ -1,5 +1,9 @@
 # 安装指南
 
+[English](INSTALL.md) | [中文](INSTALL.zh-CN.md)
+
+---
+
 ## 目录
 
 - [系统要求](#系统要求)

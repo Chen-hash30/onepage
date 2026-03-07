@@ -1,5 +1,9 @@
 # OnePage - Web Page Sharing Platform
 
+[English](README.md) | [中文](README.zh-CN.md)
+
+---
+
 ## 📖 Overview
 
 OnePage is a modern web page sharing platform that allows users to upload and share static HTML pages with custom domains, AI-powered content moderation, and real-time analytics.
