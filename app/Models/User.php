@@ -19,7 +19,8 @@ class User {
         
         try {
             $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-            $data['accepted_terms'] = $data['accepted_terms'] ?? false;
+            // 确保 accepted_terms 是整数 0 或 1
+            $data['accepted_terms'] = isset($data['accepted_terms']) ? 1 : 0;
             
             $debug[] = "处理后的数据: " . json_encode([
                 'username' => $data['username'],

@@ -161,7 +161,12 @@ class AuthController extends Controller {
             }
 
             $debug[] = "开始创建用户...";
-            $result = $this->userModel->create(['username' => $username, 'email' => $email, 'password' => $password]);
+            $result = $this->userModel->create([
+                'username' => $username, 
+                'email' => $email, 
+                'password' => $password,
+                'accepted_terms' => 0  // 新用户默认未接受条款
+            ]);
             $debug[] = "创建用户结果: " . ($result ? '成功' : '失败');
             
             if ($result) {
