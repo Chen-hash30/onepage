@@ -196,61 +196,12 @@ chmod -R 777 logs
 
 ### Nginx 配置
 
-#### 基础配置
-
-```nginx
-server {
-    listen 80;
-    listen 443 ssl http2;
-    server_name your-domain.com;
-    root /path/to/onepage/public;
-    index index.php index.html;
-
-    # SSL 配置（如果使用 HTTPS）
-    ssl_certificate /path/to/cert.pem;
-    ssl_certificate_key /path/to/key.pem;
-    ssl_protocols TLSv1.2 TLSv1.3;
-
-    # URL 重写（简化版）
-    location / {
-        if (!-e $request_filename) {
-            rewrite ^(.*)$ /index.php?s=$1 last;
-            break;
-        }
-    }
-
-    # PHP 处理
-    location ~ \.php$ {
-        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    # 静态文件缓存
-    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-
-    # 禁止访问隐藏文件
-    location ~ /\. {
-        deny all;
-    }
-
-    # 日志
-    access_log /var/log/nginx/onepage.access.log;
-    error_log /var/log/nginx/onepage.error.log;
-}
-```
-
-#### 宝塔面板配置
+#### 宝塔面板配置（推荐）
 
 1. 登录宝塔面板
 2. 网站 → your-domain.com → 设置
-3. 点击"配置文件"
-4. 找到 `location / { ... }` 块
-5. 修改为：
+3. 点击"伪静态"
+4. 添加以下规则：
    ```nginx
    location / {
        if (!-e $request_filename) {
@@ -259,7 +210,20 @@ server {
        }
    }
    ```
-6. 保存并重载
+5. 保存
+
+#### 手动 Nginx 配置
+
+如果不使用宝塔面板，在你的 nginx 配置中添加：
+
+```nginx
+location / {
+    if (!-e $request_filename) {
+        rewrite ^(.*)$ /index.php?s=$1 last;
+        break;
+    }
+}
+```
 
 ### Apache 配置
 

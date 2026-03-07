@@ -196,61 +196,12 @@ chmod -R 777 logs
 
 ### Nginx Configuration
 
-#### Basic Configuration
-
-```nginx
-server {
-    listen 80;
-    listen 443 ssl http2;
-    server_name your-domain.com;
-    root /path/to/onepage/public;
-    index index.php index.html;
-
-    # SSL Configuration (if using HTTPS)
-    ssl_certificate /path/to/cert.pem;
-    ssl_certificate_key /path/to/key.pem;
-    ssl_protocols TLSv1.2 TLSv1.3;
-
-    # URL Rewriting (Simplified)
-    location / {
-        if (!-e $request_filename) {
-            rewrite ^(.*)$ /index.php?s=$1 last;
-            break;
-        }
-    }
-
-    # PHP handling
-    location ~ \.php$ {
-        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    # Static file caching
-    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-
-    # Deny access to hidden files
-    location ~ /\. {
-        deny all;
-    }
-
-    # Logs
-    access_log /var/log/nginx/onepage.access.log;
-    error_log /var/log/nginx/onepage.error.log;
-}
-```
-
-#### For Baota Panel (宝塔面板)
+#### For Baota Panel (宝塔面板) - Recommended
 
 1. Login to Baota Panel
 2. Go to **Websites** → **your-domain.com** → **Settings**
-3. Click **Configuration File**
-4. Find the `location / { ... }` block
-5. Modify to:
+3. Click **Pseudo Static** (伪静态)
+4. Add the following rule:
    ```nginx
    location / {
        if (!-e $request_filename) {
@@ -259,7 +210,20 @@ server {
        }
    }
    ```
-6. Save and reload
+5. Save
+
+#### Manual Nginx Configuration
+
+If you're not using Baota Panel, add the following to your nginx config:
+
+```nginx
+location / {
+    if (!-e $request_filename) {
+        rewrite ^(.*)$ /index.php?s=$1 last;
+        break;
+    }
+}
+```
 
 ### Apache Configuration
 
