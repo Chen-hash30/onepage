@@ -54,7 +54,13 @@ OnePage is a modern web page sharing platform that allows users to upload and sh
 
 3. **Configure web server**
    - Point your domain's document root to the `public` directory
-   - Configure URL rewriting (see [Installation Guide](INSTALL.md))
+   - Configure URL rewriting (Nginx example):
+     ```nginx
+     if (!-e $request_filename){ 
+         rewrite ^(.*)$ /index.php?s=$1 last; break; 
+     }
+     ```
+   - See [Installation Guide](INSTALL.md) for details
 
 4. **Run the installer**
    - Visit your website in a browser
@@ -123,7 +129,7 @@ OnePage 是一个现代化的网页分享平台，允许用户上传和分享静
 
 1. **克隆仓库**
    ```bash
-   git clone https://github.com/yourusername/onepage.git
+   git clone https://github.com/Chen-hash30/onepage.git
    cd onepage
    ```
 
@@ -136,7 +142,13 @@ OnePage 是一个现代化的网页分享平台，允许用户上传和分享静
 
 3. **配置 Web 服务器**
    - 将域名的文档根目录指向 `public` 目录
-   - 配置 URL 重写（参见[安装指南](INSTALL.md)）
+   - 配置 URL 伪静态（Nginx 配置示例）：
+     ```nginx
+     if (!-e $request_filename){ 
+         rewrite ^(.*)$ /index.php?s=$1 last; break; 
+     }
+     ```
+   - 详见[安装指南](INSTALL.md)
 
 4. **运行安装程序**
    - 在浏览器中访问你的网站
