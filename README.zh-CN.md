@@ -6,17 +6,40 @@
 
 ## 📖 Overview
 
-OnePage is a modern web page sharing platform that allows users to upload and share static HTML pages with custom domains, AI-powered content moderation, and real-time analytics.
+Do you have an AI Agent that generates amazing web pages, data dashboards, and interactive games for you, but you're frustrated because you can't share them with others?
 
-## ✨ Features
+Do you have brilliant ideas from your AI conversations that you want to turn into live websites instantly?
 
-- 🚀 **Easy Upload** - Upload HTML pages via web interface or MCP API
-- 🎨 **Custom Domains** - Support for custom domain binding
-- 🤖 **AI Moderation** - Automatic content review using AI
-- 📊 **Analytics** - Real-time page view statistics
-- 🔐 **User Management** - Complete user authentication system
-- 🎯 **Admin Panel** - Powerful admin dashboard
-- 📱 **Responsive Design** - Modern, mobile-friendly UI
+Today, I'm excited to introduce **OnePage Web Sharing Platform**!
+
+🌐 **Public Service Site**: https://share.kkcws.my
+
+✨ **Why it's perfect for AI Agent owners**
+
+### 🚀 Two Usage Options, Each with Unique Advantages
+
+#### 1. Public Service Site (Zero-Cost, Instant Access)
+- No deployment needed, sign up and start using immediately
+- Upload HTML strings or ZIP files, get a subdomain instantly
+- Native MCP (Model Context Protocol) integration - just add a few lines to your config and your Agent will have the `upload_page` superpower!
+- Built-in AI-powered security system ensures content safety and compliance
+- Real-time analytics to track page views and visitor data
+- Support for custom domain binding to build your brand presence
+
+#### 2. Self-Deployment (Full Data Control)
+- Fully open source on GitHub, completely free to use
+- Private deployment option for full data control
+- Customizable features to meet your specific needs
+- Multi-user management support for team use
+- Can integrate with your own AI moderation services
+
+📢 **Invitation**
+
+Whether you want to experience the service instantly or need full control over your data, OnePage has you covered!
+
+If you want your AI Agent to have the ability to "publish web pages", you can either sign up at `share.kkcws.my` for instant access, or deploy your own instance from GitHub for complete control.
+
+Let's move from "chat dialogues" to "the open web" together!
 
 ## 🛠️ Tech Stack
 
