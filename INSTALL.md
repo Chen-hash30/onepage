@@ -100,7 +100,7 @@ server {
 
 #### Step 4: Run Installation Wizard
 
-1. Visit your website in a browser: `https://your-domain.com`
+1. Visit your website in a browser: `https://your-domain.com/install.php`
 2. You will be automatically redirected to the installation wizard
 3. Follow the 5-step installation process:
    - **Step 1**: Environment Check
