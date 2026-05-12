@@ -253,7 +253,7 @@ class McpApiServer {
             'tools' => [
                 [
                     'name' => 'upload_page',
-                    'description' => '上传并托管 HTML 网页项目。支持：1) 直接 HTML 字符串 2) HTML 文件对象 3) 完整网站（含 CSS/JS/图片）4) ZIP 压缩包。上传后自动分配子域名（如：abc123.share.easknow.com），并进行 AI 安全审核。',
+                    'description' => '上传并托管 HTML 网页项目。支持：1) 直接 HTML 字符串 2) HTML 文件对象 3) 完整网站（含 CSS/JS/图片）4) ZIP 压缩包。上传后自动生成访问链接，并进行 AI 安全审核。',
                     'inputSchema' => [
                         'type' => 'object',
                         'properties' => [
@@ -525,6 +525,8 @@ class McpApiServer {
             }
         }
 
+        $baseUrl = rtrim(EnvLoader::get('APP_URL', 'https://' . ($_SERVER['HTTP_HOST'] ?? 'localhost')), '/');
+        
         return [
             'success' => true,
             'message' => '网页上传成功',
@@ -532,7 +534,7 @@ class McpApiServer {
                 'id' => $pageId,
                 'title' => $title,
                 'slug' => $slug,
-                'url' => 'https://share.easknow.com/p/' . $slug,
+                'url' => $baseUrl . '/p/' . $slug,
                 'aiScore' => $score
             ]
         ];
