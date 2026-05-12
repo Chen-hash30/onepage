@@ -100,7 +100,7 @@ server {
 
 #### 步骤 4：运行安装向导
 
-1. 在浏览器中访问你的网站：`https://your-domain.com`
+1. 在浏览器中访问你的网站：`https://your-domain.com/install.php`
 2. 系统会自动跳转到安装向导
 3. 按照 5 步安装流程操作：
    - **步骤 1**：环境检测
