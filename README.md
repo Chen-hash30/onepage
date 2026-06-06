@@ -19,7 +19,7 @@
 
 ### 🚀 两种使用方式，各有优势
 
-#### 1. 公益站点（快速使用）
+#### 1. 公益站点（免费快速使用）
 - 无需部署，注册即可使用
 - 支持 HTML 字符串、ZIP 包直接上传，秒级分配子域名
 - 完美接入 Model Context Protocol，已支持 Cursor、OpenClaw 等主流 AI Agent 平台，只需在配置里加几行，你的 Agent 就能拥有 `upload_page` 的"超能力"！
