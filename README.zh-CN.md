@@ -125,7 +125,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 ## 🔗 Links
 
-- [Demo](https://share.kkcws.my) - Public demo site, users without deployment capabilities can register and use
+- [Demo](https://share.s17t9.my) - Public demo site, users without deployment capabilities can register and use
 - [Documentation](docs/)
 - [Issue Tracker](https://github.com/Chen-hash30/onepage/issues)
 - [Discussions](https://github.com/Chen-hash30/onepage/discussions)
