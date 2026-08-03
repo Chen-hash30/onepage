@@ -35,7 +35,7 @@ class PageController extends Controller {
 
         $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
         $slug = bin2hex(random_bytes(4)); // 8 chars slug
-        $uploadDir = dirname(__DIR__) . '/uploads/pages/' . $slug;
+        $uploadDir = dirname(__DIR__, 2) . '/uploads/pages/' . $slug;
 
         if (!mkdir($uploadDir, 0777, true)) {
             error_log('创建目录失败：' . $uploadDir . ' - ' . print_r(error_get_last(), true));
