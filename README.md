@@ -124,7 +124,7 @@
 
 ## 🔗 链接
 
-- [演示站点](https://share.kkcws.my) - 公益站，没有部署条件的用户可以注册使用
+- [演示站点](https://share.s17t9.my) - 公益站，没有部署条件的用户可以注册使用
 - [文档](docs/)
 - [问题追踪](https://github.com/Chen-hash30/onepage/issues)
 - [讨论](https://github.com/Chen-hash30/onepage/discussions)
