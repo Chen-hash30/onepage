@@ -1,8 +1,7 @@
 # Nginx 伪静态配置
+# 推荐使用 try_files 方案（保留原始 REQUEST_URI，兼容多级路由）
+# 若面板默认使用 rewrite ^(.*)$ /index.php?s=$1 last; 亦可正常运行（入口已兼容 s 参数）
 
 location / {
-    if (!-e $request_filename) {
-        rewrite ^(.*)$ /index.php?s=$1 last;
-        break;
-    }
+    try_files $uri $uri/ /index.php?$query_string;
 }

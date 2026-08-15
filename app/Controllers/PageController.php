@@ -677,6 +677,11 @@ class PageController extends Controller {
             return $this->redirect('/login');
         }
 
+        // CSRF 校验，防止未授权删除
+        if (!$this->verifyCsrf()) {
+            return $this->redirect('/dashboard?error=csrf');
+        }
+
         $page = $this->pageModel->findById($id);
         if (!$page) {
             return $this->redirect('/dashboard?error=not_found');
@@ -696,6 +701,12 @@ class PageController extends Controller {
             $this->rrmdir($folder);
         }
 
+        // 同时清理该页面的备份目录，避免残留
+        $backupFolder = __DIR__ . '/../../uploads/backups/' . $page['slug'];
+        if (is_dir($backupFolder)) {
+            $this->rrmdir($backupFolder);
+        }
+
         $deleted = $this->pageModel->delete($id);
         if ($deleted) {
             return $this->redirect('/dashboard?deleted=1');
@@ -706,6 +717,11 @@ class PageController extends Controller {
     public function togglePublic($id) {
         if (!isset($_SESSION['user_id'])) {
             return $this->redirect('/login');
+        }
+
+        // CSRF 校验，防止未授权修改发布状态
+        if (!$this->verifyCsrf()) {
+            return $this->redirect('/dashboard?error=csrf');
         }
 
         $page = $this->pageModel->findById($id);
@@ -739,5 +755,177 @@ class PageController extends Controller {
             }
         }
         @rmdir($dir);
+    }
+
+    // ==================== 文件编辑与管理 ====================
+
+    /**
+     * 权限校验：仅页面所有者或管理员可管理
+     */
+    private function canManage($page) {
+        if (!isset($_SESSION['user_id'])) return false;
+        if ((int)$page['user_id'] === (int)$_SESSION['user_id']) return true;
+        if (($_SESSION['role'] ?? '') === 'admin') return true;
+        return false;
+    }
+
+    /**
+     * CSRF 校验（用于所有写操作）
+     */
+    private function verifyCsrf() {
+        return ($_POST['csrf_token'] ?? '') !== '' && ($_POST['csrf_token'] ?? '') === ($_SESSION['csrf_token'] ?? '');
+    }
+
+    /**
+     * 原子写入文件：先写临时文件再替换，确保更新过程中访问不中断
+     */
+    private function atomicWrite($filePath, $content) {
+        $dir = dirname($filePath);
+        $tmp = $dir . '/.tmp_' . bin2hex(random_bytes(6));
+        if (@file_put_contents($tmp, $content) === false) return false;
+        @chmod($tmp, 0644);
+        // Windows 下 rename 不会覆盖已存在文件，需先移除旧文件
+        if (PHP_OS_FAMILY === 'Windows' && file_exists($filePath)) {
+            @unlink($filePath);
+        }
+        if (!@rename($tmp, $filePath)) {
+            if (!@copy($tmp, $filePath)) {
+                @unlink($tmp);
+                return false;
+            }
+            @unlink($tmp);
+        }
+        return true;
+    }
+
+    /**
+     * 备份当前 index.html 到 uploads/backups/{slug}/，返回相对项目根目录的路径
+     */
+    private function backupFile($slug, $sourcePath, $versionNumber) {
+        $backupDir = dirname(__DIR__, 2) . '/uploads/backups/' . $slug;
+        if (!is_dir($backupDir) && !mkdir($backupDir, 0777, true)) return null;
+        $backupName = $versionNumber . '_' . date('Ymd_His') . '.html';
+        $backupPath = $backupDir . '/' . $backupName;
+        if (file_exists($sourcePath) && @copy($sourcePath, $backupPath)) {
+            return 'uploads/backups/' . $slug . '/' . $backupName;
+        }
+        return null;
+    }
+
+    /**
+     * 递归复制目录内容（用于 zip 替换时同步资源文件）
+     */
+    private function copyDirContents($srcDir, $destDir) {
+        if (!is_dir($srcDir)) return;
+        $items = scandir($srcDir);
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') continue;
+            $src = $srcDir . DIRECTORY_SEPARATOR . $item;
+            $dest = $destDir . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($src)) {
+                if (!is_dir($dest)) mkdir($dest, 0777, true);
+                $this->copyDirContents($src, $dest);
+            } else {
+                @copy($src, $dest);
+            }
+        }
+    }
+
+    /**
+     * 重新上传文件替换现有文件（访问地址不变，旧版本自动备份）
+     */
+    public function replace($id) {
+        if (!isset($_SESSION['user_id'])) {
+            return $this->redirect('/login');
+        }
+        \App\Models\Page::ensureSchema();
+
+        if (!$this->verifyCsrf()) {
+            return $this->redirect('/dashboard?error=csrf');
+        }
+
+        $page = $this->pageModel->findById($id);
+        if (!$page) {
+            return $this->redirect('/dashboard?error=not_found');
+        }
+        if (!$this->canManage($page)) {
+            return $this->redirect('/dashboard?error=permission');
+        }
+
+        $file = $_FILES['webfile'] ?? null;
+        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+            return $this->redirect('/dashboard?error=upload_failed');
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (!in_array($ext, ['html', 'zip'], true)) {
+            return $this->redirect('/dashboard?error=invalid_format');
+        }
+
+        $dirName = $page['folder_path'] ?? $page['slug'];
+        $pageDir = __DIR__ . '/../../uploads/pages/' . $dirName;
+        $filePath = $pageDir . '/index.html';
+
+        // 先备份当前版本
+        $versionNumber = $this->pageModel->getNextVersionNumber($id);
+        $backupPath = $this->backupFile($page['slug'], $filePath, $versionNumber);
+
+        $content = '';
+        if ($ext === 'html') {
+            if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+                return $this->redirect('/dashboard?error=upload_failed');
+            }
+            $content = (string)file_get_contents($filePath);
+        } else {
+            // zip：先解压到临时目录，再原子更新 index.html，最后同步其余资源
+            $tmpDir = dirname(__DIR__, 2) . '/uploads/tmp/' . bin2hex(random_bytes(6));
+            if (!is_dir($tmpDir)) mkdir($tmpDir, 0777, true);
+
+            $zip = new \ZipArchive;
+            if ($zip->open($file['tmp_name']) !== TRUE) {
+                $this->rrmdir($tmpDir);
+                return $this->redirect('/dashboard?error=zip_failed');
+            }
+            $zip->extractTo($tmpDir);
+            $zip->close();
+
+            $newIndex = $tmpDir . '/index.html';
+            if (!file_exists($newIndex)) {
+                $this->rrmdir($tmpDir);
+                return $this->redirect('/dashboard?error=index_missing');
+            }
+            $content = (string)file_get_contents($newIndex);
+            if (!$this->atomicWrite($filePath, $content)) {
+                $this->rrmdir($tmpDir);
+                return $this->redirect('/dashboard?error=save_failed');
+            }
+            $this->copyDirContents($tmpDir, $pageDir);
+            $this->rrmdir($tmpDir);
+        }
+
+        $this->pageModel->createVersion($id, $versionNumber, $backupPath, '文件替换上传', $_SESSION['user_id']);
+
+        // 与初次上传保持一致：对新内容执行 AI 审核
+        $aiReviewer = new \App\Core\AIReviewer();
+        $result = $aiReviewer->reviewContent($content, $id, 'web');
+        $score = $result['score'] ?? null;
+        if ($score !== null) {
+            $this->pageModel->updateAIScore($id, $score);
+            $threshold = floatval(\App\Core\Config::get('ai.threshold', '7.0'));
+            if ($score >= $threshold) {
+                $this->pageModel->banPage($id);
+                try {
+                    $adminEmail = \App\Core\Config::get('admin.email', 'admin@yourdomain.com');
+                    $subject = '网页内容违规通知';
+                    $message = "用户替换上传的网页 (ID: $id, Slug: {$page['slug']}) AI 评分: $score，已达到违规阈值。页面已被自动封禁。";
+                    \App\Core\Mailer::sendNotification($adminEmail, $subject, $message);
+                } catch (\Exception $e) {
+                    // 忽略邮件发送失败
+                }
+                return $this->redirect('/dashboard?error=content_banned');
+            }
+        }
+
+        return $this->redirect('/dashboard?success=replaced');
     }
 }

@@ -9,6 +9,35 @@
         </button>
     </div>
 
+    <!-- 操作结果提示 -->
+    <?php
+    $flash = null;
+    if (isset($_GET['success'])) {
+        $msgMap = ['replaced' => '文件替换成功，访问地址保持不变', 'deleted' => '页面已删除', 'toggled' => '发布状态已更新'];
+        $flash = ['type' => 'success', 'text' => $msgMap[$_GET['success']] ?? '操作成功'];
+    } elseif (isset($_GET['error'])) {
+        $msgMap = [
+            'csrf' => '安全校验失败，请刷新页面后重试',
+            'permission' => '您没有权限执行此操作',
+            'upload_failed' => '文件上传失败',
+            'invalid_format' => '仅支持 .html 或 .zip 文件',
+            'zip_failed' => 'ZIP 解压失败',
+            'index_missing' => 'ZIP 包内未找到 index.html',
+            'save_failed' => '文件保存失败，请重试',
+            'content_banned' => '内容审核未通过，页面已被封禁',
+            'not_found' => '页面不存在',
+            'delete_failed' => '删除失败',
+            'toggle_failed' => '状态切换失败'
+        ];
+        $flash = ['type' => 'error', 'text' => $msgMap[$_GET['error']] ?? '操作失败'];
+    }
+    ?>
+    <?php if ($flash): ?>
+        <div class="mb-10 px-5 py-4 rounded-2xl text-sm font-medium border <?= $flash['type'] === 'success' ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400' ?>">
+            <?= $flash['type'] === 'success' ? '<i class="fas fa-check-circle mr-2"></i>' : '<i class="fas fa-exclamation-circle mr-2"></i>' ?><?= $flash['text'] ?>
+        </div>
+    <?php endif; ?>
+
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
         <?php 
@@ -64,6 +93,9 @@
                             <span class="mr-4"><i class="fas fa-eye"></i> <?= $page['views'] ?> <span class="text-[10px] uppercase ml-1 opacity-50">Views</span></span>
                         </div>
                         <div class="flex space-x-3">
+                            <button data-id="<?= $page['id'] ?>" data-title="<?= htmlspecialchars($page['title'], ENT_QUOTES) ?>" onclick="openReplaceModal(this)" class="w-10 h-10 flex items-center justify-center glass rounded-xl hover:bg-white/10 transition-all border border-white/10" title="上传替换">
+                                <i class="fas fa-upload text-xs"></i>
+                            </button>
                             <a href="/p/<?= $page['slug'] ?>" target="_blank" class="w-10 h-10 flex items-center justify-center glass rounded-xl hover:bg-white/10 transition-all border border-white/10" title="预览">
                                 <i class="fas fa-link text-xs"></i>
                             </a>
@@ -117,6 +149,25 @@
     </div>
 </div>
 
+<!-- Replace Modal -->
+<div id="replaceModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+    <div class="max-w-lg w-full glass p-8 rounded-3xl" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">上传替换</h2>
+            <button onclick="document.getElementById('replaceModal').classList.add('hidden')" class="text-gray-500 hover:text-white">&times;</button>
+        </div>
+        <form id="replaceForm" action="" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">替换文件：<span id="replacePageName" class="text-purple-400"></span></label>
+                <input type="file" name="webfile" accept=".html,.zip" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white file:text-black hover:file:bg-gray-200">
+                <p class="mt-2 text-xs text-gray-500">上传后将覆盖原文件，<span class="text-purple-400">访问地址保持不变</span>。旧版本会自动备份，可在编辑页查看历史版本。</p>
+            </div>
+            <button type="submit" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl hover:bg-purple-700 transition">确认替换</button>
+        </form>
+    </div>
+</div>
+
 <!-- Share Modal -->
 <div id="shareModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
     <div class="max-w-md w-full glass p-8 rounded-3xl text-center" onclick="event.stopPropagation()">
@@ -141,6 +192,12 @@ function sharePage(slug) {
     document.getElementById('shareUrl').value = url;
     document.getElementById('qrImage').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url);
     document.getElementById('shareModal').classList.remove('hidden');
+}
+
+function openReplaceModal(btn) {
+    document.getElementById('replaceForm').action = '/pages/replace/' + btn.dataset.id;
+    document.getElementById('replacePageName').textContent = '《' + btn.dataset.title + '》';
+    document.getElementById('replaceModal').classList.remove('hidden');
 }
 
 function copyLink() {

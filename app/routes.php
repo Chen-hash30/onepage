@@ -42,6 +42,9 @@ $router->add('GET', '/manage', 'PageController@manage');
 $router->add('POST', '/pages/delete/{id}', 'PageController@delete');
 $router->add('POST', '/pages/toggle-public/{id}', 'PageController@togglePublic');
 
+// 文件重新上传替换（访问地址保持不变）
+$router->add('POST', '/pages/replace/{id}', 'PageController@replace');
+
 // Admin routes - specific routes first
 $router->add('POST', '/admin/ban/{id}', 'AdminController@banPage');
 $router->add('POST', '/admin/unban/{id}', 'AdminController@unbanPage');

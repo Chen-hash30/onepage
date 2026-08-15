@@ -34,6 +34,12 @@ require __DIR__ . '/../app/routes.php';
 $uri = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
 
+// 兼容宝塔面板等伪静态配置：rewrite ^(.*)$ /index.php?s=$1 last;
+// 此时 REQUEST_URI 会被改写为 /index.php?s=原路径，需要从 $_GET['s'] 还原真实路由
+if (isset($_GET['s']) && $_GET['s'] !== '' && strpos($uri, '/index.php') === 0) {
+    $uri = '/' . ltrim($_GET['s'], '/');
+}
+
 try {
     $router->dispatch($uri, $method);
 } catch (Exception $e) {

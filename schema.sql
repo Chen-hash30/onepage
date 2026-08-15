@@ -40,6 +40,19 @@ CREATE TABLE IF NOT EXISTS visits (
     FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE
 );
 
+-- Page versions table (modification history & backups)
+CREATE TABLE IF NOT EXISTS page_versions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    page_id INT NOT NULL,
+    version_number INT NOT NULL,
+    backup_path VARCHAR(255) DEFAULT NULL,
+    note VARCHAR(255) DEFAULT NULL,
+    created_by INT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_page_versions_page (page_id),
+    CONSTRAINT fk_page_versions_page FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE
+);
+
 -- Settings table
 CREATE TABLE IF NOT EXISTS settings (
     `key` VARCHAR(50) PRIMARY KEY,

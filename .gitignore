@@ -13,6 +13,8 @@ logs/
 # Uploads (user content)
 uploads/pages/*
 !uploads/pages/.gitkeep
+uploads/backups/
+uploads/tmp/
 
 # Temporary files
 tmp/
